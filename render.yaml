@@ -1,0 +1,31 @@
+# Blueprint do Render: cria o banco PostgreSQL e o servidor Django juntos.
+# No Render: New → Blueprint → escolha este repositório.
+
+databases:
+  - name: cafe-talhoes-db
+    databaseName: cafe_talhoes
+    user: cafe
+    plan: free            # ATENÇÃO: o banco grátis é apagado após 30 dias. Troque para pago antes disso.
+
+services:
+  - type: web
+    name: cafe-talhoes-api
+    runtime: python
+    plan: free            # grátis "dorme" após 15 min sem uso; o primeiro acesso demora ~1 min
+    rootDir: servidor
+    buildCommand: bash build.sh
+    startCommand: gunicorn cafe_api.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 90
+    healthCheckPath: /api/status/
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cafe-talhoes-db
+          property: connectionString
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_SUPERUSER_USERNAME
+        sync: false       # o Render pede para você digitar no primeiro deploy
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false

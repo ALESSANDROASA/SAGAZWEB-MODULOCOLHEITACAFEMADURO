@@ -1,0 +1,12 @@
+node_modules/
+.expo/
+dist/
+*.log
+.DS_Store
+
+servidor/.venv/
+servidor/db.sqlite3
+servidor/staticfiles/
+__pycache__/
+*.pyc
+.env
